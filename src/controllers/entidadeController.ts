@@ -53,17 +53,35 @@ const connectToDatabase = async (config: any): Promise<Sequelize> => {
 // Função para consultar a tabela indice_financeiro de um banco
 const consultarIndiceFinanceiro = async (sequelize: Sequelize): Promise<any[]> => {
   try {
-    // Usando a instância de sequelize para realizar a consulta no modelo
-    const indices = await IndiceFinanceiro.sequelize?.query('SELECT id, nome FROM indice_financeiro', {
-      type: QueryTypes.SELECT,  // Aqui usamos QueryTypes corretamente
+    // Consultar a tabela 'indice_financeiro' e fazer o JOIN com 'indice_financeiro_correcao' para pegar o último registro
+    const indices = await IndiceFinanceiro.sequelize?.query(
+      `SELECT 
+          i.id, 
+          i.nome, 
+          c.percentual, 
+          c.competencia 
+       FROM 
+          indice_financeiro AS i
+       LEFT JOIN 
+          indice_financeiro_correcao AS c 
+       ON 
+          i.id = c.fk_indice
+       WHERE 
+          c.competencia = (
+            SELECT MAX(competencia) 
+            FROM indice_financeiro_correcao 
+            WHERE fk_indice = i.id
+          )`, {
+      type: QueryTypes.SELECT,  // Define que a consulta é de seleção
     });
 
-    return indices || [];
+    return indices || [];  // Retorna os resultados ou um array vazio se não encontrar nada
   } catch (error) {
     console.error('Erro ao consultar a tabela indice_financeiro:', error);
     throw new Error('Erro ao consultar a tabela indice_financeiro');
   }
 };
+
 
 // Controlador para consultar as entidades e seus dados financeiros
 export const consultarEntidades = async (req: Request, res: Response) => {
@@ -88,7 +106,7 @@ export const consultarEntidades = async (req: Request, res: Response) => {
       console.log(`Conectando ao banco de dados ${entidade.nome} (ID: ${entidade.id})...`);
       const sequelize = await connectToDatabase(config);
 
-      // Consultar a tabela 'indice_financeiro'
+      // Consultar a tabela 'indice_financeiro' com os dados de correção
       const indicesFinanceiros = await consultarIndiceFinanceiro(sequelize);
       resultadosFinanceiros.push({
         entidade: entidade.nome,
