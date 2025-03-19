@@ -2,9 +2,8 @@ import express from 'express';
 import swaggerUi from 'swagger-ui-express';
 import dotenv from 'dotenv';
 import winston from 'winston';
-import { Request, Response } from 'express';
 import { swaggerDocument } from '../swagger';
-import Entidade from './models/entidade';
+import { consultarEntidades } from './controllers/entidadeController';
 
 dotenv.config();
 
@@ -21,17 +20,14 @@ const logger = winston.createLogger({
 app.use(express.json());
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-// Endpoints
-app.get('/entidades', async (req: Request, res: Response) => {
-  try {
-    const entidades = await Entidade.findAll();
-    res.json(entidades);
-  } catch (error) {
-    logger.error('Erro ao consultar entidades:', error);
-    res.status(500).json({ message: 'Erro ao consultar entidades' });
-  }
+// Rota de consulta de entidades utilizando o controlador
+app.get('/entidades', consultarEntidades);
+
+// Inicializa o servidor na porta definida no .env ou na porta 3001 por padrão
+const port = process.env.PORT || 3001;
+app.listen(port, () => {
+  console.log(`Servidor iniciado na porta ${port}`);
 });
 
-// Apenas exporta o app sem iniciar o servidor
 export default app;
 export { logger };
