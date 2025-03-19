@@ -1,0 +1,93 @@
+# Node modules
+/node_modules/
+
+# Yarn lock file (se você usar yarn)
+yarn.lock
+
+# NPM lock file (se você usar npm)
+package-lock.json
+
+# Build output
+/dist/
+/build/
+
+# Logs
+*.log
+*.log.*
+
+# .env file with sensitive credentials
+.env
+
+# TypeScript
+*.tsbuildinfo
+
+# VSCode config
+.vscode/
+
+# macOS system files
+.DS_Store
+
+# Windows system files
+Thumbs.db
+
+# IntelliJ IDEA
+.idea/
+
+# JetBrains Rider
+.idea/
+
+# Sequelize-cli generated files
+sequelize-cli-migrations/
+
+# Tye configuration files
+.tye/
+
+# Docker files (if not using Docker)
+docker-compose.yml
+Dockerfile
+
+# Test coverage reports
+/coverage/
+
+# Jest
+jest.config.js
+jest.setup.js
+
+# TypeScript coverage
+/tsconfig.json
+
+# Eslint, Prettier, and other linter configuration files
+.eslintrc.js
+.prettierignore
+.prettierrc
+.eslintcache
+
+# Jest coverage output
+/coverage
+
+# Yarn logs
+.yarn-debug.log*
+.yarn-error.log*
+
+# Jest snapshot
+*.snap
+
+# Ignore any IDE or editor config files
+*.sublime-workspace
+*.sublime-project
+.idea/
+.vscode/
+
+# If you use pnpm
+.pnpm-debug.log
+.pnpm-lock.yaml
+
+# If you use Netlify
+netlify.toml
+
+# Miscellaneous
+npm-debug.log
+npm-debug.log.*
+
+# MacOS system files
+*.swp
