@@ -1,45 +1,43 @@
-import { Model, DataTypes } from 'sequelize';
-import sequelize from '../config/database';
+import { Sequelize, DataTypes, Model } from 'sequelize';
+import { sequelize } from '../config/database';
 
-class Entidade extends Model {}
+class Entidade extends Model {
+  public id!: number;
+  public nome!: string;
+  public host!: string;
+  public database!: string;
+  public port!: number;
+}
 
 Entidade.init(
   {
     id: {
-      type: DataTypes.BIGINT,
+      type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
     nome: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-    },
-    slug: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-    },
-    database: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-    },
-    username: {
-      type: DataTypes.STRING(100),
+      type: DataTypes.STRING,
       allowNull: false,
     },
     host: {
-      type: DataTypes.STRING(255),
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    database: {
+      type: DataTypes.STRING,
       allowNull: false,
     },
     port: {
-      type: DataTypes.STRING(10),
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
   },
   {
     sequelize,
-    modelName: 'Entidade',
     tableName: 'entidades',
-    timestamps: false, // Os timestamps automáticos continuam desativados
+    timestamps: false,  // Desabilita as colunas `createdAt` e `updatedAt`
+    paranoid: false,    // Impede o uso de exclusões lógicas com `deletedAt`
   }
 );
 
