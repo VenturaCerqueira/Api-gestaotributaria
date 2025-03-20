@@ -53,34 +53,44 @@ const connectToDatabase = async (config: any): Promise<Sequelize> => {
 // Função para consultar a tabela indice_financeiro de um banco
 const consultarIndiceFinanceiro = async (sequelize: Sequelize): Promise<any[]> => {
   try {
-    // Consultar a tabela 'indice_financeiro' e fazer o JOIN com 'indice_financeiro_correcao' para pegar o último registro
-    const indices = await IndiceFinanceiro.sequelize?.query(
-      `SELECT 
+    // Consultar a tabela 'indice_financeiro' e fazer o JOIN otimizado com CTE para pegar o último registro
+    const query = `
+      WITH MaxCompetencia AS (
+        SELECT 
+          fk_indice, 
+          MAX(competencia) AS max_competencia
+        FROM 
+          indice_financeiro_correcao
+        GROUP BY 
+          fk_indice
+      )
+      SELECT 
           i.id, 
           i.nome, 
           c.percentual, 
-          c.competencia 
-       FROM 
+          c.competencia
+      FROM 
           indice_financeiro AS i
-       LEFT JOIN 
+      JOIN 
           indice_financeiro_correcao AS c 
-       ON 
-          i.id = c.fk_indice
-       WHERE 
-          c.competencia = (
-            SELECT MAX(competencia) 
-            FROM indice_financeiro_correcao 
-            WHERE fk_indice = i.id
-          )`, {
-      type: QueryTypes.SELECT,  // Define que a consulta é de seleção
+          ON i.id = c.fk_indice
+      JOIN 
+          MaxCompetencia AS mc
+          ON c.fk_indice = mc.fk_indice AND c.competencia = mc.max_competencia;
+    `;
+
+    // Executando a consulta
+    const indices = await sequelize.query(query, {
+      type: QueryTypes.SELECT, // Define que a consulta é de seleção
     });
 
-    return indices || [];  // Retorna os resultados ou um array vazio se não encontrar nada
+    return indices || []; // Retorna os resultados ou um array vazio se não encontrar nada
   } catch (error) {
     console.error('Erro ao consultar a tabela indice_financeiro:', error);
     throw new Error('Erro ao consultar a tabela indice_financeiro');
   }
 };
+
 
 
 // Controlador para consultar as entidades e seus dados financeiros
